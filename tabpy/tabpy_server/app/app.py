@@ -7,7 +7,6 @@ import shutil
 import signal
 import sys
 import tabpy
-import ssl
 from tabpy.tabpy import __version__
 from tabpy.tabpy_server.app.app_parameters import ConfigParameters, SettingsParameters
 from tabpy.tabpy_server.app.util import parse_pwd_file
@@ -88,10 +87,10 @@ class TabPyApp:
         protocol = self.settings[SettingsParameters.TransferProtocol]
         ssl_options = None
         if protocol == "https":
-            context = ssl.SSLContext(ssl.PROTOCOL_TLSv1_2)
-            context.load_cert_chain(self.settings[SettingsParameters.CertificateFile],
-                                    self.settings[SettingsParameters.KeyFile])
-            ssl_options = context
+            ssl_options = {
+                "certfile": self.settings[SettingsParameters.CertificateFile],
+                "keyfile": self.settings[SettingsParameters.KeyFile],
+            }
         elif protocol != "http":
             msg = f"Unsupported transfer protocol {protocol}."
             logger.critical(msg)
